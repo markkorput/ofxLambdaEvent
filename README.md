@@ -2,7 +2,7 @@
 Bringing te power of lambda to ofEvent
 
 ## Disclaimer
-The core lambda logic is handled by the internal ```ofxLiquidEvent``` class, which is directly copied from [https://github.com/elliotwoods/ofxLiquidEvent](https://github.com/elliotwoods/ofxLiquidEvent) so all those credits go to elliotwoods. The reason I copied his class instead of using his addon, is to keep the dependency list clean, and adding another addon dependency for a single file seems like an unnecessary hassle (especially since I made this addon mostly for personal use and don't expect many people to take notice).
+The core lambda logic is handled by the internal ```ofxLiquidEvent``` class, which is grabbed directly from [https://github.com/elliotwoods/ofxLiquidEvent](https://github.com/elliotwoods/ofxLiquidEvent) so all those credits go to elliotwoods (I just added the locking and modification queueing). The reason I copied his class instead of using his addon, is to keep the dependency list clean, and adding another addon dependency for a single file seems like an unnecessary pain in the ass (especially since I made this addon mostly for personal use and don't expect many people to take notice).
 
 ## Explanation
 This addon provides a ```LambdaEvent``` class which is basically nothing more than ofEvent and ofxLiquidEvent merge into one, with some logics to tie the two together and some extra convenience methods.
