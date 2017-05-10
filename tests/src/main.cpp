@@ -73,6 +73,19 @@ class ofApp: public ofxUnitTestsApp{
             ofNotifyEvent(eventA, param);
             test_eq(result, param+param, "");
         TEST_END
+
+        TEST_START(forward ofEvent)
+            ofEvent<string> eventA;
+            LambdaEvent<string> eventB;
+            eventB.forward(eventA);
+
+            string result;
+            string param = "forward!";
+
+            eventB.addListener([&result](string& arg){ result += arg; }, this);
+            ofNotifyEvent(eventA, param);
+            test_eq(result, param, "");
+        TEST_END
     }
 };
 
