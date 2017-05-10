@@ -22,15 +22,20 @@ public: // ofxLiquidEvent methods
     void notifyListenersInReverse(Type& arguments);
 
 public: // custom methods
+    void forward(ofEvent<Type> &event);
     void forward(LambdaEvent<Type> &event);
     void stopForward(LambdaEvent<Type> &event);
 
     void forwardTo(ofEvent<Type> &event);
     void stopForwardTo(ofEvent<Type> &event);
 
+private: // callbacks
+    void onForwardEvent(Type& arg);
+
 private: // attributes
     std::vector<ofEvent<Type>*> forwardToEvents;
     std::vector<LambdaEvent<Type>*> forwardFromLambdaEvents;
+    std::vector<ofEvent<Type>*> forwardFromOfEvents;
 };
 
 
@@ -73,6 +78,13 @@ void LambdaEvent<Type>::notifyListenersInReverse(Type& arguments){
 }
 
 template<typename Type>
+void LambdaEvent<Type>::forward(ofEvent<Type> &event){
+    ofAddListener(event, this, &LambdaEvent<Type>::onForwardEvent);
+    // keep a record of events we're following
+    forwardFromOfEvents.push_back(&event);
+}
+
+template<typename Type>
 void LambdaEvent<Type>::forward(LambdaEvent<Type> &event){
     event.addListener([this](Type& instance){ notifyListeners(instance); }, this);
     // keep a record of events we're following
@@ -103,4 +115,9 @@ void LambdaEvent<Type>::stopForwardTo(ofEvent<Type> &event){
     for(auto it = forwardToEvents.begin(); it != forwardToEvents.end(); it++)
         if((*it) == &event)
             forwardToEvents.erase(it);
+}
+
+template<typename Type>
+void LambdaEvent<Type>::onForwardEvent(Type& arg){
+    notifyListeners(arg);
 }
