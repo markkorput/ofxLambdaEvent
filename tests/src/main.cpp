@@ -114,6 +114,23 @@ class ofApp: public ofxUnitTestsApp{
             eventA.stopForwardTo(eventB);
             test_eq(eventA.size(), 0, "");
         TEST_END
+
+        TEST_START(Middleware)
+            Middleware<string> middleware;
+            string result;
+            middleware.addListener([&result](string& value) -> bool { result += "1-" + value; return true; }, this);
+            middleware.addListener([&result](string& value) -> bool { result += "2-" + value; return false; }, 0);
+            middleware.addListener([&result](string& value) -> bool { result += "3-" + value; return true; }, this);
+
+            string param = "test";
+            test_eq(middleware.notifyListeners(param), false, "");
+            test_eq(result, "1-test2-test", "");
+
+            param = "again";
+            middleware.removeListeners(0);
+            test_eq(middleware.notifyListeners(param), true, "");
+            test_eq(result, "1-test2-test1-again3-again", "");
+        TEST_END
     }
 };
 
