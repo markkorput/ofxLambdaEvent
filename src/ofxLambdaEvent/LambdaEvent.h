@@ -29,11 +29,14 @@ public: // custom methods
     void forwardTo(ofEvent<Type> &event);
     void stopForwardTo(ofEvent<Type> &event);
 
+    size_t size() const {
+        return ofEvent<Type>::size() + ofxLiquidEvent<Type>::size();
+    }
+
 private: // callbacks
     void onForwardEvent(Type& arg);
 
 private: // attributes
-    std::vector<ofEvent<Type>*> forwardToEvents;
     std::vector<LambdaEvent<Type>*> forwardFromLambdaEvents;
     std::vector<ofEvent<Type>*> forwardFromOfEvents;
 };
@@ -49,8 +52,6 @@ inline void LambdaEvent<Type>::destroy(){
     for(auto ofevent : forwardFromOfEvents)
         ofRemoveListener(*ofevent, this, &LambdaEvent<Type>::onForwardEvent);
     forwardFromOfEvents.clear();
-
-    forwardToEvents.clear();
 }
 
 // overwrite ofEvent method; call original implementation AND call lambda notifications
@@ -111,14 +112,14 @@ void LambdaEvent<Type>::stopForward(LambdaEvent<Type> &event){
 
 template<typename Type>
 void LambdaEvent<Type>::forwardTo(ofEvent<Type> &event){
-    forwardToEvents.push_back(&event);
+    this->addListener([&event](Type& value){
+        ofNotifyEvent(event, value);
+    }, &event);
 }
 
 template<typename Type>
 void LambdaEvent<Type>::stopForwardTo(ofEvent<Type> &event){
-    for(auto it = forwardToEvents.begin(); it != forwardToEvents.end(); it++)
-        if((*it) == &event)
-            forwardToEvents.erase(it);
+    this->removeListeners(&event);
 }
 
 template<typename Type>

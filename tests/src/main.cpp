@@ -11,6 +11,12 @@ class ofApp: public ofxUnitTestsApp{
         attribute1 += param;
     }
 
+    string attribute2;
+
+    void _onEvent2(string& param){
+        attribute2 += param;
+    }
+
     void run(){
         TEST_START(lambda listener)
             LambdaEvent<string> event;
@@ -89,6 +95,23 @@ class ofApp: public ofxUnitTestsApp{
             }
 
             // test if the de-allocatd eventB cleaned up nicely
+            test_eq(eventA.size(), 0, "");
+        TEST_END
+
+        TEST_START(forward to ofEvent)
+            LambdaEvent<string> eventA;
+            ofEvent<string> eventB;
+            string param = "take this!";
+
+            eventA.forwardTo(eventB);
+            ofAddListener(eventB, this, &ofApp::_onEvent2);
+
+            eventA.notifyListeners(param);
+            test_eq(attribute2, param, "");
+            ofNotifyEvent(eventA, param);
+            test_eq(attribute2, param+param, "");
+            test_eq(eventA.size(), 1, "");
+            eventA.stopForwardTo(eventB);
             test_eq(eventA.size(), 0, "");
         TEST_END
     }
