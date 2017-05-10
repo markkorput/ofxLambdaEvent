@@ -22,15 +22,23 @@ public: // ofxLiquidEvent methods
     void notifyListenersInReverse(Type& arguments);
 
 public: // custom methods
+    void forward(ofEvent<Type> &event);
     void forward(LambdaEvent<Type> &event);
     void stopForward(LambdaEvent<Type> &event);
 
     void forwardTo(ofEvent<Type> &event);
     void stopForwardTo(ofEvent<Type> &event);
 
+    size_t size() const {
+        return ofEvent<Type>::size() + ofxLiquidEvent<Type>::size();
+    }
+
+private: // callbacks
+    void onForwardEvent(Type& arg);
+
 private: // attributes
-    std::vector<ofEvent<Type>*> forwardToEvents;
     std::vector<LambdaEvent<Type>*> forwardFromLambdaEvents;
+    std::vector<ofEvent<Type>*> forwardFromOfEvents;
 };
 
 
@@ -39,9 +47,11 @@ template<typename Type>
 inline void LambdaEvent<Type>::destroy(){
     for(auto event : forwardFromLambdaEvents)
         stopForward(*event);
-
     forwardFromLambdaEvents.clear();
-    forwardToEvents.clear();
+
+    for(auto ofevent : forwardFromOfEvents)
+        ofRemoveListener(*ofevent, this, &LambdaEvent<Type>::onForwardEvent);
+    forwardFromOfEvents.clear();
 }
 
 // overwrite ofEvent method; call original implementation AND call lambda notifications
@@ -73,6 +83,13 @@ void LambdaEvent<Type>::notifyListenersInReverse(Type& arguments){
 }
 
 template<typename Type>
+void LambdaEvent<Type>::forward(ofEvent<Type> &event){
+    ofAddListener(event, this, &LambdaEvent<Type>::onForwardEvent);
+    // keep a record of events we're following
+    forwardFromOfEvents.push_back(&event);
+}
+
+template<typename Type>
 void LambdaEvent<Type>::forward(LambdaEvent<Type> &event){
     event.addListener([this](Type& instance){ notifyListeners(instance); }, this);
     // keep a record of events we're following
@@ -95,12 +112,17 @@ void LambdaEvent<Type>::stopForward(LambdaEvent<Type> &event){
 
 template<typename Type>
 void LambdaEvent<Type>::forwardTo(ofEvent<Type> &event){
-    forwardToEvents.push_back(&event);
+    this->addListener([&event](Type& value){
+        ofNotifyEvent(event, value);
+    }, &event);
 }
 
 template<typename Type>
 void LambdaEvent<Type>::stopForwardTo(ofEvent<Type> &event){
-    for(auto it = forwardToEvents.begin(); it != forwardToEvents.end(); it++)
-        if((*it) == &event)
-            forwardToEvents.erase(it);
+    this->removeListeners(&event);
+}
+
+template<typename Type>
+void LambdaEvent<Type>::onForwardEvent(Type& arg){
+    notifyListeners(arg);
 }

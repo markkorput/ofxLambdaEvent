@@ -11,6 +11,12 @@ class ofApp: public ofxUnitTestsApp{
         attribute1 += param;
     }
 
+    string attribute2;
+
+    void _onEvent2(string& param){
+        attribute2 += param;
+    }
+
     void run(){
         TEST_START(lambda listener)
             LambdaEvent<string> event;
@@ -60,8 +66,53 @@ class ofApp: public ofxUnitTestsApp{
             test_eq(attribute1, "traditional listener works!traditional listener works!", "");
         TEST_END
 
-        TEST_START(forward)
-            ofLogWarning() << "TODO";
+        TEST_START(forward LambdaEvent)
+            LambdaEvent<string> eventA, eventB;
+            eventB.forward(eventA);
+
+            string result;
+            string param = "forward!";
+
+            eventB.addListener([&result](string& arg){ result += arg; }, this);
+            eventA.notifyListeners(param);
+            test_eq(result, param, "");
+            ofNotifyEvent(eventA, param);
+            test_eq(result, param+param, "");
+        TEST_END
+
+        TEST_START(forward ofEvent)
+            ofEvent<string> eventA;
+            string result;
+            string param = "forward!";
+
+            {
+                LambdaEvent<string> eventB;
+                eventB.forward(eventA);
+                test_eq(eventA.size(), 1, "");
+                eventB.addListener([&result](string& arg){ result += arg; }, this);
+                ofNotifyEvent(eventA, param);
+                test_eq(result, param, "");
+            }
+
+            // test if the de-allocatd eventB cleaned up nicely
+            test_eq(eventA.size(), 0, "");
+        TEST_END
+
+        TEST_START(forward to ofEvent)
+            LambdaEvent<string> eventA;
+            ofEvent<string> eventB;
+            string param = "take this!";
+
+            eventA.forwardTo(eventB);
+            ofAddListener(eventB, this, &ofApp::_onEvent2);
+
+            eventA.notifyListeners(param);
+            test_eq(attribute2, param, "");
+            ofNotifyEvent(eventA, param);
+            test_eq(attribute2, param+param, "");
+            test_eq(eventA.size(), 1, "");
+            eventA.stopForwardTo(eventB);
+            test_eq(eventA.size(), 0, "");
         TEST_END
     }
 };
