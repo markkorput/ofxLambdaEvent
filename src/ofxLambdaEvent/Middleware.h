@@ -6,7 +6,7 @@
 
 //! \brief The Middleware class is pretty much the same as ofxLiquidEvent, except it takes lambdas that return a boolean and stops
 //! notifying listeners after the first listener that returns a false value. Also its notification method returns wether all listeners
-//! returned true or not, so it can be used to let the listeners inform the notifyer if some process needs to be performed or not.
+//! returned true or not, so it can be used to let the listeners inform the notifier if some process needs to be performed or not.
 template<class ArgType>
 class Middleware {
 public:

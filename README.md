@@ -54,3 +54,17 @@ lambdafierEvent.addListener([](ofKeyEventArgs args){
 ```
 
 Note that, obviously, LambdaEvent's destructor cleans up after itself nicely, so it will stop forwarding when de-allocated. If for some reason you want to disconnect from the original ofEvent before that, this is also possible: ``` lambdafierEvent.stopForward(ofEvents().keyPressed); ```
+
+
+## Extra - Middleware
+the Middleware class has exactly the same API as ofxLiquidEvent (.addListener, .notifyListeners, .removeListeners), but takes lambdas that return a boolean value. If any of the listeners returns false, the notification immediately end and other listeners are not invoked. The notifyListeners function also returns wether all lambdas returns true or not; this way the Middleware class can be used to have listeners inform the notifier about wether to perform a certain process or not.
+
+```c++
+Middleware<string> uploadMiddleware;
+
+uploadMiddleware.addListener([](string& url) -> bool { return url.substring(0, 8) == "https://"; )}, this);
+
+if(uploadMiddleware.notifyListeners(uploadUrlString)){
+    // perform upload logic
+}
+```

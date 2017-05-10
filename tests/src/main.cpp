@@ -118,9 +118,9 @@ class ofApp: public ofxUnitTestsApp{
         TEST_START(Middleware)
             Middleware<string> middleware;
             string result;
-            middleware.addListener([&result](string& value) -> bool { result += "1-" + value; return true; }, this);
-            middleware.addListener([&result](string& value) -> bool { result += "2-" + value; return false; }, 0);
-            middleware.addListener([&result](string& value) -> bool { result += "3-" + value; return true; }, this);
+            middleware.addListener([&result](string& value){ result += "1-" + value; return true; }, this);
+            middleware.addListener([&result](string& value){ result += "2-" + value; return false; }, 0);
+            middleware.addListener([&result](string& value){ result += "3-" + value; return true; }, this);
 
             string param = "test";
             test_eq(middleware.notifyListeners(param), false, "");
