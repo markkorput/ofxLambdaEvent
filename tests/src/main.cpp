@@ -7,7 +7,19 @@
 class ofApp: public ofxUnitTestsApp{
 
     void run(){
-        TEST_START(first test)
+        TEST_START(lambda listener)
+            LambdaEvent<string> event;
+
+            string result;
+            event.addListener([&result](string& param){
+                result += param;
+            }, this);
+
+            string arg = "ciao mondo";
+            event.notifyListeners(arg);
+            test_eq(result, "ciao mondo", "");
+            event.notifyListeners(arg);
+            test_eq(result, "ciao mondociao mondo", "");
         TEST_END
     }
 };
