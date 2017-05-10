@@ -60,8 +60,18 @@ class ofApp: public ofxUnitTestsApp{
             test_eq(attribute1, "traditional listener works!traditional listener works!", "");
         TEST_END
 
-        TEST_START(forward)
-            ofLogWarning() << "TODO";
+        TEST_START(forward LambdaEvent)
+            LambdaEvent<string> eventA, eventB;
+            eventB.forward(eventA);
+
+            string result;
+            string param = "forward!";
+
+            eventB.addListener([&result](string& arg){ result += arg; }, this);
+            eventA.notifyListeners(param);
+            test_eq(result, param, "");
+            ofNotifyEvent(eventA, param);
+            test_eq(result, param+param, "");
         TEST_END
     }
 };
