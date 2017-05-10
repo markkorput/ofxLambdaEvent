@@ -44,8 +44,12 @@ template<typename Type>
 inline void LambdaEvent<Type>::destroy(){
     for(auto event : forwardFromLambdaEvents)
         stopForward(*event);
-
     forwardFromLambdaEvents.clear();
+
+    for(auto ofevent : forwardFromOfEvents)
+        ofRemoveListener(*ofevent, this, &LambdaEvent<Type>::onForwardEvent);
+    forwardFromOfEvents.clear();
+
     forwardToEvents.clear();
 }
 

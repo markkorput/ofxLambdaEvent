@@ -76,15 +76,20 @@ class ofApp: public ofxUnitTestsApp{
 
         TEST_START(forward ofEvent)
             ofEvent<string> eventA;
-            LambdaEvent<string> eventB;
-            eventB.forward(eventA);
-
             string result;
             string param = "forward!";
 
-            eventB.addListener([&result](string& arg){ result += arg; }, this);
-            ofNotifyEvent(eventA, param);
-            test_eq(result, param, "");
+            {
+                LambdaEvent<string> eventB;
+                eventB.forward(eventA);
+                test_eq(eventA.size(), 1, "");
+                eventB.addListener([&result](string& arg){ result += arg; }, this);
+                ofNotifyEvent(eventA, param);
+                test_eq(result, param, "");
+            }
+
+            // test if the de-allocatd eventB cleaned up nicely
+            test_eq(eventA.size(), 0, "");
         TEST_END
     }
 };
