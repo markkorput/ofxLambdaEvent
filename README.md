@@ -2,10 +2,10 @@
 Bringing te power of lambda to ofEvent
 
 ## Disclaimer
-The core lambda logic is handled by the internal ```ofxLiquidEvent``` class, which is grabbed directly from [https://github.com/elliotwoods/ofxLiquidEvent](https://github.com/elliotwoods/ofxLiquidEvent) so all those credits go to elliotwoods (I just added the locking and modification queueing). The reason I copied his class instead of using his addon, is to keep the dependency list clean, and adding another addon dependency for a single file seems like an unnecessary pain in the ass (especially since I made this addon mostly for personal use and don't expect many people to take notice).
+The core lambda logic is handled by the internal ```ofxLiquidEvent``` class, which is grabbed directly from [https://github.com/elliotwoods/ofxLiquidEvent](https://github.com/elliotwoods/ofxLiquidEvent) so all those credits go to elliotwoods (I just added the locking and modification queueing). The reason I copied his class instead of using his addon, is to keep the dependency list clean, and adding another addon dependency for a single file seems like an unnecessary pain in the ass.
 
 ## Explanation
-This addon provides a ```LambdaEvent``` class which is basically nothing more than ofEvent and ofxLiquidEvent merge into one, with some logics to tie the two together and some extra convenience methods.
+This addon provides a ```LambdaEvent``` class which is basically nothing more than ofEvent and ofxLiquidEvent merged into one, with some logics to tie the two together and some extra convenience methods.
 
 Note also that the ```LambdaEvent``` class has no smart logic to trigger the listeners in the proper order when both ofEvent-style and ofxLiquidEvent-style listeners are registered. Mixing both types on the same event is possible but simply not recommended; just use your preferred method consistently.
 
@@ -19,7 +19,7 @@ LambdaEvent<SomeCustomObjectType> customEvent;
 // arg2 (this) is linked to the lambda so you can later unregister the lambda
 customEvent.addListener([](SomeCustomObjectType obj){
     doSomethingWith(obj);
-}, this)
+}, this);
 // trigger the event
 customEvent.notifyListeners(instanceOfSomeCustomObjectType);
 // unregister lambda; this will remove ALL lambdas which were registered with 'this' as second argument
