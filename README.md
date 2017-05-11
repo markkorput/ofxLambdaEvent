@@ -57,7 +57,7 @@ Note that, obviously, LambdaEvent's destructor cleans up after itself nicely, so
 
 
 ## Extra - Middleware
-the Middleware class has exactly the same API as ofxLiquidEvent (.addListener, .notifyListeners, .removeListeners), but takes lambdas that return a boolean value. If any of the listeners returns false, the notification immediately end and other listeners are not invoked. The notifyListeners function also returns wether all lambdas returns true or not; this way the Middleware class can be used to have listeners inform the notifier about wether to perform a certain process or not.
+the Middleware class has exactly the same API as ofxLiquidEvent (.addListener, .notifyListeners, .removeListeners), but takes lambdas that return a boolean value. If any of the listeners returns false, the notifications immediately end and remaining listeners are not invoked. The notifyListeners function also returns wether all lambdas returned true or not; this way the Middleware class can be used to have listeners inform the notifier about wether to perform a certain process or not.
 
 ```c++
 Middleware<string> uploadMiddleware;
