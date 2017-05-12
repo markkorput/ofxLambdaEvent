@@ -1,15 +1,16 @@
 # ofxLambdaEvent
 Bringing te power of lambda to ofEvent
 
-## Disclaimer
+## Credits
 The core lambda logic is handled by the internal ```ofxLiquidEvent``` class, which is grabbed directly from [https://github.com/elliotwoods/ofxLiquidEvent](https://github.com/elliotwoods/ofxLiquidEvent) so all those credits go to elliotwoods (I just added the locking and modification queueing). The reason I copied his class instead of using his addon, is to keep the dependency list clean, and adding another addon dependency for a single file seems like an unnecessary pain in the ass.
 
 ## Explanation
-This addon provides a ```LambdaEvent``` class which is basically nothing more than ofEvent and ofxLiquidEvent merged into one, with some logics to tie the two together and some extra convenience methods.
+This addon provides a ```LambdaEvent``` class which is basically nothing more than ofEvent and [ofxLiquidEvent](https://github.com/elliotwoods/ofxLiquidEvent) merged into one, with some logic to tie the two together and some extra convenience methods.
 
-Note also that the ```LambdaEvent``` class has no smart logic to trigger the listeners in the proper order when both ofEvent-style and ofxLiquidEvent-style listeners are registered. Mixing both types on the same event is possible but simply not recommended; just use your preferred method consistently.
+Note also that the ```LambdaEvent``` class has no smart logic to trigger the listeners in the proper order when both ofEvent-style listeners and ofxLiquidEvent-style lambdas are used. Mixing both types on the same event is possible but simply not recommended; use your preferred method consistently.
 
 ## Usage - lambda only
+_You can use a LambdaEvent like an ofxLiquidEvent_
 
 ```c++
 // create an event instance
@@ -27,6 +28,7 @@ customEvent.removeListeners(this);
 ```
 
 ## Usage - like an ofEvent
+_You can use LambdaEvent like an ofEvent_
 ```c++
 // create an event instance
 LambdaEvent<SomeCustomObjectType> customEvent;
@@ -57,7 +59,7 @@ Note that, obviously, LambdaEvent's destructor cleans up after itself nicely, so
 
 
 ## Extra - Middleware
-the Middleware class has exactly the same API as ofxLiquidEvent (.addListener, .notifyListeners, .removeListeners), but takes lambdas that return a boolean value. If any of the listeners returns false, the notifications immediately end and remaining listeners are not invoked. The notifyListeners function also returns wether all lambdas returned true or not; this way the Middleware class can be used to have listeners inform the notifier about wether to perform a certain process or not.
+The Middleware class has exactly the same API as ofxLiquidEvent (.addListener, .notifyListeners, .removeListeners), but takes lambdas that return a boolean value. If any of the listeners returns false, the notifications immediately end and remaining listeners are not invoked. The notifyListeners function also returns wether all lambdas returned true or not; this way the Middleware class can be used to have listeners inform the notifier about wether to perform a certain process or not.
 
 ```c++
 Middleware<string> uploadMiddleware;
