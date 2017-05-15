@@ -28,6 +28,9 @@ public: // custom methods
     void forward(LambdaEvent<Type> &event);
     void stopForward(LambdaEvent<Type> &event);
 
+    //! stops forwarding all events
+    void stopForward();
+
     void forwardTo(ofEvent<Type> &event);
     void stopForwardTo(ofEvent<Type> &event);
 
@@ -47,13 +50,7 @@ private: // attributes
 
 template<typename Type>
 inline void LambdaEvent<Type>::destroy(){
-    for(auto event : forwardFromLambdaEvents)
-        stopForward(*event);
-    forwardFromLambdaEvents.clear();
-
-    for(auto ofevent : forwardFromOfEvents)
-        ofRemoveListener(*ofevent, this, &LambdaEvent<Type>::onForwardEvent);
-    forwardFromOfEvents.clear();
+    stopForward();
 }
 
 // overwrite ofEvent method; call original implementation AND call lambda notifications
@@ -126,6 +123,17 @@ void LambdaEvent<Type>::stopForward(LambdaEvent<Type> &event){
     }
 
     ofLogWarning() << "couldn't find LambdaEvent instance to stop forwarding from";
+}
+
+template<typename Type>
+void LambdaEvent<Type>::stopForward(){
+    for(auto event : forwardFromLambdaEvents)
+        stopForward(*event);
+    forwardFromLambdaEvents.clear();
+
+    for(auto ofevent : forwardFromOfEvents)
+        ofRemoveListener(*ofevent, this, &LambdaEvent<Type>::onForwardEvent);
+    forwardFromOfEvents.clear();
 }
 
 template<typename Type>

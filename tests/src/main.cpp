@@ -69,6 +69,7 @@ class ofApp: public ofxUnitTestsApp{
         TEST_START(forward LambdaEvent)
             LambdaEvent<string> eventA, eventB;
             eventB.forward(eventA);
+            test_eq(eventA.size(), 1, "");
 
             string result;
             string param = "forward!";
@@ -78,6 +79,15 @@ class ofApp: public ofxUnitTestsApp{
             test_eq(result, param, "");
             ofNotifyEvent(eventA, param);
             test_eq(result, param+param, "");
+
+            // stop forwarding
+            eventB.stopForward(eventA);
+            test_eq(eventA.size(), 0, "");
+            // start forwarding again
+            eventB.forward(eventA);
+            test_eq(eventA.size(), 1, "");
+            eventB.stopForward(); // without parameter stops all forwards
+            test_eq(eventA.size(), 0, "");
         TEST_END
 
         TEST_START(forward ofEvent)
@@ -102,8 +112,17 @@ class ofApp: public ofxUnitTestsApp{
                 test_eq(eventA.size(), 1, "");
             }
 
-            // test if the de-allocatd eventB cleaned up nicely
+            // test if the de-allocated eventB cleaned up nicely
             test_eq(eventA.size(), 0, "");
+
+            {
+                LambdaEvent<string> eventB;
+                // register forwarder again
+                eventB.forward(eventA);
+                test_eq(eventA.size(), 1, "");
+                eventB.stopForward(); // without parameter stops all forwards
+                test_eq(eventA.size(), 0, "");
+            }
         TEST_END
 
         TEST_START(forward to ofEvent)
