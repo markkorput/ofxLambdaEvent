@@ -23,6 +23,8 @@ public: // ofxLiquidEvent methods
 
 public: // custom methods
     void forward(ofEvent<Type> &event);
+    void stopForward(ofEvent<Type> &event);
+
     void forward(LambdaEvent<Type> &event);
     void stopForward(LambdaEvent<Type> &event);
 
@@ -87,6 +89,22 @@ void LambdaEvent<Type>::forward(ofEvent<Type> &event){
     ofAddListener(event, this, &LambdaEvent<Type>::onForwardEvent);
     // keep a record of events we're following
     forwardFromOfEvents.push_back(&event);
+}
+
+
+template<typename Type>
+void LambdaEvent<Type>::stopForward(ofEvent<Type> &event){
+    ofRemoveListener(event, this, &LambdaEvent<Type>::onForwardEvent);
+
+    for(auto it = forwardFromOfEvents.begin(); it != forwardFromOfEvents.end(); it++){
+        if((*it) == &event){
+            // ofLog() << "stopForward: found";
+            forwardFromOfEvents.erase(it);
+            return;
+        }
+    }
+
+    ofLogWarning() << "couldn't find ofEvent instance to stop forwarding from";
 }
 
 template<typename Type>

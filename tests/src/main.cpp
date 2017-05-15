@@ -92,6 +92,14 @@ class ofApp: public ofxUnitTestsApp{
                 eventB.addListener([&result](string& arg){ result += arg; }, this);
                 ofNotifyEvent(eventA, param);
                 test_eq(result, param, "");
+
+                eventB.stopForward(eventA);
+                test_eq(eventA.size(), 0, "");
+                ofNotifyEvent(eventA, param);
+                test_eq(result, param, "");
+
+                eventB.forward(eventA);
+                test_eq(eventA.size(), 1, "");
             }
 
             // test if the de-allocatd eventB cleaned up nicely
