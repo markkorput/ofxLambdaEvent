@@ -65,7 +65,7 @@ public: // methods
 	void addListener(Functor functor, void* owner, IndexType order) {
 		if(isLocked()){
 			// queue modification until we unlock
-			modificationRefs.push_back(make_shared<Modification>(functor, owner, order));
+			modificationRefs.push_back(std::make_shared<Modification>(functor, owner, order));
 			return;
 		}
 
@@ -80,7 +80,7 @@ public: // methods
 	void removeListeners(void* owner) {
 		if(isLocked()){
 			// queue modification until we unlock
-			modificationRefs.push_back(make_shared<Modification>(owner));
+			modificationRefs.push_back(std::make_shared<Modification>(owner));
 			return;
 		}
 
@@ -172,7 +172,7 @@ protected:
 
 private:
 	int lockCounter;
-	std::vector<shared_ptr<Modification>> modificationRefs;
+	std::vector<std::shared_ptr<Modification>> modificationRefs;
 };
 
 

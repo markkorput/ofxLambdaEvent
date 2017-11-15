@@ -4,6 +4,8 @@
 #define TEST_START(x) {ofLog()<<"CASE: "<<#x;
 #define TEST_END }
 
+using namespace std;
+
 class ofApp: public ofxUnitTestsApp{
     string attribute1;
 

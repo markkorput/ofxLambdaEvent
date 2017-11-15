@@ -14,12 +14,13 @@ public: // constructor etc.
     void destroy();
 
 public: // ofEvent method
-    inline void notify(const void* sender, Type & param);
+    inline bool notify(Type & param);
+    inline bool notify(const void* sender, Type & param);
 
 public: // ofxLiquidEvent methods
-    void notifyListeners();
-    void notifyListeners(Type& arguments);
-    void notifyListenersInReverse(Type& arguments);
+    bool notifyListeners();
+    bool notifyListeners(Type& arguments);
+    bool notifyListenersInReverse(Type& arguments);
 
 public: // custom methods
     void forward(ofEvent<Type> &event);
@@ -55,30 +56,37 @@ inline void LambdaEvent<Type>::destroy(){
 
 // overwrite ofEvent method; call original implementation AND call lambda notifications
 template<typename Type>
-inline void LambdaEvent<Type>::notify(const void* sender, Type & param){
-    ofEvent<Type>::notify(sender, param);
+inline bool LambdaEvent<Type>::notify(Type & param){
     ofxLiquidEvent<Type>::notifyListeners(param);
+    return ofEvent<Type>::notify(param);
+}
+
+// overwrite ofEvent method; call original implementation AND call lambda notifications
+template<typename Type>
+inline bool LambdaEvent<Type>::notify(const void* sender, Type & param){
+    ofxLiquidEvent<Type>::notifyListeners(param);
+    return ofEvent<Type>::notify(sender, param);
 }
 
 // overwrite ofxLiquidEvent method; call original implementation AND call ofEvent notifications
 template<typename Type>
-void LambdaEvent<Type>::notifyListeners(Type& arguments){
+bool LambdaEvent<Type>::notifyListeners(Type& arguments){
     ofxLiquidEvent<Type>::notifyListeners(arguments);
-    ofEvent<Type>::notify(this, arguments);
+    return ofEvent<Type>::notify(this, arguments);
 }
 
 // overwrite ofxLiquidEvent method; call original implementation AND call ofEvent notifications
 template<typename Type>
-void LambdaEvent<Type>::notifyListeners(){
+bool LambdaEvent<Type>::notifyListeners(){
     ofxLiquidEvent<Type>::notifyListeners();
-    ofEvent<Type>::notify();
+    return ofEvent<Type>::notify();
 }
 
 // overwrite ofxLiquidEvent method; call original implementation AND call ofEvent notifications
 template<typename Type>
-void LambdaEvent<Type>::notifyListenersInReverse(Type& arguments){
+bool LambdaEvent<Type>::notifyListenersInReverse(Type& arguments){
     ofxLiquidEvent<Type>::notifyListenersInReverse(arguments);
-    ofEvent<Type>::notify(arguments);
+    return ofEvent<Type>::notify(arguments);
 }
 
 template<typename Type>
